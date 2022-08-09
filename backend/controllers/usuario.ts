@@ -72,3 +72,122 @@ export const autenticar = async (req: Request, res: Response) => {
     });
   }
 }
+
+export const confirmar = async (req: Request, res: Response) => { 
+  const { token } = req.params;
+  try {
+    const usuarioConfirmar = await Usuario.findOne({ token });
+    if (!usuarioConfirmar) {
+      const error = new Error('El token utilizado no es válido');
+      return res.status(404).json({
+        ok: false,
+        msg: error.message
+      });
+    }
+
+    usuarioConfirmar.confirmado = true;
+    usuarioConfirmar.token = '';
+    await usuarioConfirmar.save();
+
+    res.status(200).json({
+      ok: true,
+      msg: 'El usuario ha sido confirmado'
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al confirmar usuario',
+      error
+    });
+  }
+}
+
+export const olvidePassword = async (req: Request, res: Response) => { 
+  const { email } = req.body;
+
+  try {
+    const usuario = await Usuario.findOne({ email });
+    if (!usuario) {
+      const error = new Error(`El usuario con el correo ${email} no existe`);
+      return res.status(404).json({
+        ok: false,
+        msg: error.message
+      });
+    }
+
+    usuario.token = generarId();
+    await usuario.save();
+
+    res.status(200).json({
+      ok: true,
+      msg: 'Se ha enviado un correo para restablecer la contraseña'
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al enviar correo',
+      error
+    });
+  }
+}
+
+export const comprobarToken = async (req: Request, res: Response) => { 
+  const { token } = req.params;
+
+  try {
+    const tokenValido = await Usuario.findOne({ token });
+    if (!tokenValido) {
+      const error = new Error('El token utilizado no es válido');
+      return res.status(404).json({
+        ok: false,
+        msg: error.message
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      msg: 'El token es válido y el usuario puede restablecer la contraseña'
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al comprobar token',
+      error
+    });
+  }
+}
+
+export const nuevoPassword = async (req: Request, res: Response) => { 
+  const { token } = req.params;
+  const { password } = req.body;
+
+  try {
+    const usuario = await Usuario.findOne({ token });
+    if (!usuario) {
+      const error = new Error('El token utilizado no es válido');
+      return res.status(404).json({
+        ok: false,
+        msg: error.message
+      });
+    }
+
+    usuario.password = password;
+    usuario.token = '';
+    await usuario.save();
+
+    res.status(200).json({
+      ok: true,
+      msg: 'Se ha restablecido la contraseña correctamente'
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al restablecer contraseña',
+      error
+    });
+  }
+}
