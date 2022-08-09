@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Usuario } from '../models/Usuario';
-import { generarId } from '../helpers/generar-id';
+import { generarId, generarJwt } from '../helpers';
 
 export const registrar = async (req: Request, res: Response) => {
   const { nombre, email, password } = req.body;
@@ -61,6 +61,7 @@ export const autenticar = async (req: Request, res: Response) => {
       _id: usuario._id,
       nombre: usuario.nombre,
       email: usuario.email,
+      token: generarJwt({ _id: usuario._id })
     });
   } catch (error) {
     console.log(error);
