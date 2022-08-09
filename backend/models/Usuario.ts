@@ -7,6 +7,7 @@ interface IUsuarioModel {
   email: string;
   token: string;
   confirmado: boolean;
+  comprobarPassword: (password: string) => Promise<boolean>;
 }
 
 const usuarioSchema = new mongoose.Schema<IUsuarioModel>({
@@ -40,5 +41,9 @@ usuarioSchema.pre('save', async function (next: () => void) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
+
+usuarioSchema.methods.comprobarPassword = async function (password: string) { 
+  return bcrypt.compare(password, this.password);
+}
 
 export const Usuario = mongoose.model("Usuario", usuarioSchema);
