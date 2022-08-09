@@ -12,11 +12,13 @@
   "author": "Yeferson Zaque",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "mongoose": "^6.5.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "ts-node-dev": "^2.0.0",
     "tslint": "^6.1.3",
