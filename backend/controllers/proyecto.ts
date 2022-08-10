@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ObjectId } from 'mongoose';
 import { Proyecto } from '../models/Proyecto';
+import { Tarea } from '../models/Tarea';
 
 export const obtenerProyectos = async (req: Request, res: Response) => { 
   const { _id } = req.usuario;
@@ -39,7 +39,12 @@ export const obtenerProyecto = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(200).json(proyecto);
+    const tareas = await Tarea.find().where({ proyecto: proyecto._id });
+
+    res.status(200).json({
+      proyecto,
+      tareas
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -149,9 +154,5 @@ export const agregarColaborador = async (req: Request, res: Response) => {
 }
 
 export const eliminarColaborador = async (req: Request, res: Response) => { 
-
-}
-
-export const obtenerTareas = async (req: Request, res: Response) => { 
 
 }
