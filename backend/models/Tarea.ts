@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { IProyectoModel } from './Proyecto';
 
 export interface ITareaModel {
   nombre: string;
@@ -6,7 +7,7 @@ export interface ITareaModel {
   estado: boolean;
   fechaEntrega: Date;
   prioridad: string;
-  proyecto: mongoose.Schema.Types.ObjectId;
+  proyecto: mongoose.Schema.Types.ObjectId | IProyectoModel;
 }
 
 const tareaSchema = new mongoose.Schema<ITareaModel>({

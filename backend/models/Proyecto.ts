@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 export interface IProyectoModel {
+  _id?: mongoose.Types.ObjectId;
   nombre: string;
   descripcion: string;
   fechaEntrega: Date;

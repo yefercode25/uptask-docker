@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 
-router.get('/', checkAuth, agregarTarea);
+router.post('/', checkAuth, agregarTarea);
 
 router.route('/:id')
   .get(checkAuth, obtenerTarea)
