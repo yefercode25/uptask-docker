@@ -13,13 +13,13 @@ const app: Express = express();
 app.use(express.json());
 
 // Configurar CORS
-const whitelist = ['http://localhost:5173'];
+const whitelist = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 app.use(cors({
   origin: (origin, callback) => { 
     if(!whitelist.includes(origin!)) {
       return callback(new Error('No tienes permiso para hacer peticiones a este servidor'));
     }
-    
+
     callback(null, true);
   }
 }));
