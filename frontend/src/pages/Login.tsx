@@ -2,11 +2,14 @@ import { Link } from 'react-router-dom';
 import { useState, FormEvent } from 'react';
 import Alerta from '../components/Alerta';
 import { ApiService } from '../services/ApiService';
+import { useAuth } from '../hooks/useAuth';
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [alerta, setAlerta] = useState({ msg: '', error: false });
+
+  const { setAuth } = useAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => { 
     e.preventDefault();
@@ -23,8 +26,10 @@ const Login = () => {
 
     try {
       const { data } = await ApiService.post('/usuarios/login', { email, password });
-      localStorage.setItem('token', data.token);
 
+      localStorage.setItem('token', data.token);
+      
+      setAuth({ ...data });
       setAlerta({ msg: '', error: false });
     } catch (error: any) { 
       setAlerta({ msg: error.response.data.msg, error: true });
