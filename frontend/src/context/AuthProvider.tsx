@@ -3,6 +3,7 @@ import { IAuthValues } from '../types/context/auth';
 import { ApiService } from '../services/ApiService';
 
 interface IAuthContextData { 
+  auth: IAuthValues;
   setAuth: (auth: IAuthValues) => void;
 }
 
@@ -24,7 +25,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(data);
+        
+        setAuth({ ...data, token });
       } catch (error: any) {
         console.log(error.response.data.msg);
       }
@@ -34,7 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ setAuth }}>
+    <AuthContext.Provider value={{ auth, setAuth }}>
       {children}
     </AuthContext.Provider>
   );
