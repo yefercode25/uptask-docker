@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Usuario } from '../models/Usuario';
 import { generarId, generarJwt } from '../helpers';
+import { emailRegistro } from '../services/email';
 
 export const registrar = async (req: Request, res: Response) => {
   const { nombre, email, password } = req.body;
@@ -16,7 +17,10 @@ export const registrar = async (req: Request, res: Response) => {
   try {
     const usuario = new Usuario({ nombre, email, password });
     usuario.token = generarId();
+    
     await usuario.save();
+    await emailRegistro({ email: usuario.email, nombre: usuario.nombre, token: usuario.token });
+
     res.json({ msg: 'Usuario creado correctamente, revisa tu email para confirmar tu cuenta' });
   } catch (error) {
     console.log(error);
