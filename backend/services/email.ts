@@ -1,13 +1,15 @@
 import nodemailer from 'nodemailer';
 
-const transport = nodemailer.createTransport({
-  host: "smtp.mailtrap.io",
-  port: 2525,
-  auth: {
-    user: "4386468fb36b0c",
-    pass: "48df4ce8620315"
-  }
-});
+const getTransport = () => { 
+  return nodemailer.createTransport({
+    host: process.env.MAIL_HOST,
+    port: Number(process.env.MAIL_PORT),
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    }
+  });
+}
 
 interface DatosEmail {
   email: string;
@@ -17,6 +19,7 @@ interface DatosEmail {
 
 export const emailRegistro = async (datos: DatosEmail) => { 
   const { email, nombre, token } = datos;
+  const transport = getTransport();
 
   const urlConfirmacion = `${process.env.FRONTEND_URL}/confirmar/${token}`;
 
@@ -36,6 +39,7 @@ export const emailRegistro = async (datos: DatosEmail) => {
 
 export const emailOlvidePassword = async (datos: DatosEmail) => { 
   const { email, nombre, token } = datos;
+  const transport = getTransport();
 
   const urlRecuperarPassword = `${process.env.FRONTEND_URL}/olvide-password/${token}`;
 
