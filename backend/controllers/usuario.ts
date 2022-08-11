@@ -199,8 +199,5 @@ export const nuevoPassword = async (req: Request, res: Response) => {
 }
 
 export const perfil = async (req: Request, res: Response) => { 
-  res.status(200).json({
-    ok: true,
-    usuario: req.usuario
-  });
+  res.status(200).json(req.usuario);
 }
