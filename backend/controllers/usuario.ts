@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Usuario } from '../models/Usuario';
 import { generarId, generarJwt } from '../helpers';
-import { emailRegistro } from '../services/email';
+import { emailOlvidePassword, emailRegistro } from '../services/email';
 
 export const registrar = async (req: Request, res: Response) => {
   const { nombre, email, password } = req.body;
@@ -121,7 +121,9 @@ export const olvidePassword = async (req: Request, res: Response) => {
     }
 
     usuario.token = generarId();
+    
     await usuario.save();
+    await emailOlvidePassword({ email: usuario.email, nombre: usuario.nombre, token: usuario.token });
 
     res.status(200).json({
       ok: true,
