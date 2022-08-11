@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, FormEvent } from 'react';
 import Alerta from '../components/Alerta';
 import { ApiService } from '../services/ApiService';
@@ -9,6 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState<string>('');
   const [alerta, setAlerta] = useState({ msg: '', error: false });
 
+  const navigate = useNavigate();
   const { setAuth } = useAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => { 
@@ -31,6 +32,7 @@ const Login = () => {
       
       setAuth({ ...data });
       setAlerta({ msg: '', error: false });
+      navigate('/proyectos');
     } catch (error: any) { 
       setAlerta({ msg: error.response.data.msg, error: true });
     }
