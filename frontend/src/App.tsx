@@ -9,6 +9,7 @@ import NuevoPassword from './pages/NuevoPassword';
 import ConfirmarCuenta from './pages/ConfirmarCuenta';
 import RutaProtegida from './layouts/RutaProtegida';
 import Proyectos from './pages/Proyectos';
+import NuevoProyecto from './pages/NuevoProyecto';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           </Route>
           <Route path="/proyectos" element={<RutaProtegida />}>
             <Route element={<Proyectos />} index />
+            <Route path="crear-proyecto" element={<NuevoProyecto />} />
           </Route>
         </Routes>
       </AuthProvider>
