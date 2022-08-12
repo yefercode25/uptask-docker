@@ -1,9 +1,9 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { IAlertaValues, IProyectoValues, IProyectoSaveValues } from '../types/context/proyectos';
 import { ApiService } from '../services/ApiService';
 
 interface IProyectosContextData {
-  proyectos: any[];
+  proyectos: IProyectoSaveValues[];
   alerta: IAlertaValues;
   mostrarAlerta: (alerta: IAlertaValues) => void;
   submitProyecto: (proyecto: IProyectoValues) => Promise<boolean>;
@@ -14,6 +14,19 @@ export const ProyectosContext = createContext<IProyectosContextData>({} as IProy
 export const ProyectosProvider = ({ children }: { children: React.ReactNode }) => { 
   const [proyectos, setProyectos] = useState<IProyectoSaveValues[]>([]);
   const [alerta, setAlerta] = useState<IAlertaValues>({} as IAlertaValues);
+
+  useEffect(() => {
+    const obtenerProyectos = async () => { 
+      try {
+        const { data } = await ApiService.get<IProyectoSaveValues[]>('/proyectos');
+        setProyectos(data);
+      } catch (_) { 
+        console.log('Inicia sesión para administrar los proyectos');
+      }
+    }
+
+    obtenerProyectos();
+  }, []);
 
   const mostrarAlerta = (datos: IAlertaValues) => {
     setAlerta(datos);
