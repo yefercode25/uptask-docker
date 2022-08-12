@@ -1,0 +1,24 @@
+export interface IAlertaValues {
+  msg: string;
+  error: boolean;
+}
+
+export interface IProyectoValues { 
+  nombre: string;
+  descripcion: string;
+  fechaEntrega: string;
+  cliente: string;
+}
+
+export interface IProyectoSaveValues {
+  _id: string;
+  nombre: string;
+  descripcion: string;
+  fechaEntrega: string;
+  cliente: string;
+  colaboradores: any[];
+  creador: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}

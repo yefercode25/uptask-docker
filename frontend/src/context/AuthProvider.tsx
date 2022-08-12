@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import { IAuthValues } from '../types/context/auth';
 import { ApiService } from '../services/ApiService';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
 
 interface IAuthContextData { 
   auth: IAuthValues;
@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [cargando, setCargando] = useState<boolean>(true);
 
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   
   useEffect(() => { 
     const autenticarUsuario = async () => { 
@@ -33,7 +34,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
         
         setAuth({ ...data, token });
-        navigate('/proyectos');
+        
+        if (pathname === '/') navigate('/proyectos');
       } catch (error: any) {
         console.log(error.response.data.msg);
         setAuth({} as IAuthValues);
