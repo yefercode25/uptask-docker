@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import { IAlertaValues, IProyectoValues, IProyectoSaveValues } from '../types/context/proyectos';
+import { IAlertaValues, IProyectoValues, IProyectoSaveValues, ITareaValues, ITareaSaveValues } from '../types/context/proyectos';
 import { ApiService } from '../services/ApiService';
 
 interface IProyectosContextData {
@@ -13,6 +13,7 @@ interface IProyectosContextData {
   eliminarProyecto: (id: string) => Promise<boolean>;
   modalFormularioTarea: boolean;
   handleModalTarea: () => void;
+  submitTarea: (tarea: ITareaValues) => Promise<boolean>;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -108,6 +109,17 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     setmodalFormularioTarea(!modalFormularioTarea);
   }
 
+  const submitTarea = async (tarea: ITareaValues): Promise<boolean> => { 
+    try {
+      const { data } = await ApiService.post<ITareaSaveValues>(`/tareas`, { ...tarea });
+      
+      return true;
+    } catch (error: any) { 
+      setAlerta({ msg: error.response.data.msg, error: true });
+      return false;
+    }
+  }
+
   return (
     <ProyectosContext.Provider
       value={{
@@ -120,7 +132,8 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         cargando,
         eliminarProyecto,
         modalFormularioTarea,
-        handleModalTarea
+        handleModalTarea,
+        submitTarea
       }}
     >
       {children}

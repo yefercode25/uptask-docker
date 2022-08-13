@@ -28,3 +28,25 @@ export interface IProyectoInfoValues {
   proyecto: IProyectoSaveValues;
   tareas: any[];
 }
+
+export interface ITareaValues {
+  id?: string;
+  nombre: string;
+  descripcion: string;
+  fechaEntrega: string;
+  prioridad: string;
+  proyecto: string;
+}
+
+export interface ITareaSaveValues {
+  _id: string;
+  nombre: string;
+  descripcion: string;
+  fechaEntrega: string;
+  prioridad: string;
+  proyecto: string;
+  estado: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
