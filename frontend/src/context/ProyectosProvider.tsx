@@ -11,6 +11,8 @@ interface IProyectosContextData {
   obtenerProyecto: (id: string) => Promise<void>;
   cargando: boolean;
   eliminarProyecto: (id: string) => Promise<boolean>;
+  modalFormularioTarea: boolean;
+  handleModalTarea: () => void;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -20,6 +22,7 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const [proyecto, setProyecto] = useState<IProyectoSaveValues>({} as IProyectoSaveValues);
   const [alerta, setAlerta] = useState<IAlertaValues>({} as IAlertaValues);
   const [cargando, setCargando] = useState<boolean>(false);
+  const [modalFormularioTarea, setmodalFormularioTarea] = useState<boolean>(false);
 
   useEffect(() => {
     const obtenerProyectos = async () => { 
@@ -90,11 +93,19 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
       setProyectos(proyectos.filter(proy => proy._id !== id));
       setAlerta({ msg: data.msg, error: false });
 
+      setTimeout(() => {
+        setAlerta({ msg: '', error: false });
+      } , 3000);
+
       return true;
     } catch (error: any) {
       setAlerta({ msg: error.response.data.msg, error: true });
       return false;
     }
+  }
+
+  const handleModalTarea = () => {
+    setmodalFormularioTarea(!modalFormularioTarea);
   }
 
   return (
@@ -107,7 +118,9 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         obtenerProyecto,
         proyecto,
         cargando,
-        eliminarProyecto
+        eliminarProyecto,
+        modalFormularioTarea,
+        handleModalTarea
       }}
     >
       {children}
