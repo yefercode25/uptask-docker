@@ -22,7 +22,7 @@ export const obtenerProyecto = async (req: Request, res: Response) => {
   const { id } = req.params;
   
   try {
-    const proyecto = await Proyecto.findById(id);
+    const proyecto = await Proyecto.findById(id).populate('tareas');
     if (!proyecto) {
       const error = new Error('El proyecto no ha sido encontrado');
       return res.status(404).json({
