@@ -38,10 +38,31 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   }
 
   const submitProyecto = async (proyectoSave: IProyectoValues): Promise<boolean> => {
+    if (proyectoSave.id) {
+      return editarProyecto(proyectoSave);
+    } else {
+      return nuevoProyecto(proyectoSave);
+    }
+  }
+
+  const nuevoProyecto = async (proyectoSave: IProyectoValues): Promise<boolean> => { 
     try {
       const { data } = await ApiService.post<IProyectoSaveValues>('/proyectos', { ...proyectoSave });
       setProyectos([...proyectos, data]);
       setAlerta({ msg: 'Proyecto creado con éxito', error: false });
+
+      return true;
+    } catch (error: any) { 
+      setAlerta({ msg: error.response.data.msg, error: true });
+      return false;
+    }
+  }
+
+  const editarProyecto = async (proyectoSave: IProyectoValues): Promise<boolean> => { 
+    try {
+      const { data } = await ApiService.put<IProyectoSaveValues>(`/proyectos/${proyectoSave.id}`, { ...proyectoSave });
+      setProyectos(proyectos.map(proy => proy._id === data._id ? data : proy));
+      setAlerta({ msg: 'Proyecto editado con éxito', error: false });
 
       return true;
     } catch (error: any) { 

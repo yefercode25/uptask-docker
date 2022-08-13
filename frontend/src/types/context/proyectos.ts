@@ -4,6 +4,7 @@ export interface IAlertaValues {
 }
 
 export interface IProyectoValues { 
+  id?: string;
   nombre: string;
   descripcion: string;
   fechaEntrega: string;
