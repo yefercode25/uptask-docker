@@ -4,16 +4,21 @@ import { ApiService } from '../services/ApiService';
 
 interface IProyectosContextData {
   proyectos: IProyectoSaveValues[];
+  proyecto: IProyectoSaveValues;
   alerta: IAlertaValues;
   mostrarAlerta: (alerta: IAlertaValues) => void;
   submitProyecto: (proyecto: IProyectoValues) => Promise<boolean>;
+  obtenerProyecto: (id: string) => Promise<void>;
+  cargando: boolean;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
 
 export const ProyectosProvider = ({ children }: { children: React.ReactNode }) => { 
   const [proyectos, setProyectos] = useState<IProyectoSaveValues[]>([]);
+  const [proyecto, setProyecto] = useState<IProyectoSaveValues>({} as IProyectoSaveValues);
   const [alerta, setAlerta] = useState<IAlertaValues>({} as IAlertaValues);
+  const [cargando, setCargando] = useState<boolean>(false);
 
   useEffect(() => {
     const obtenerProyectos = async () => { 
@@ -32,9 +37,9 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     setAlerta(datos);
   }
 
-  const submitProyecto = async (proyecto: IProyectoValues): Promise<boolean> => {
+  const submitProyecto = async (proyectoSave: IProyectoValues): Promise<boolean> => {
     try {
-      const { data } = await ApiService.post<IProyectoSaveValues>('/proyectos', { ...proyecto });
+      const { data } = await ApiService.post<IProyectoSaveValues>('/proyectos', { ...proyectoSave });
       setProyectos([...proyectos, data]);
       setAlerta({ msg: 'Proyecto creado con éxito', error: false });
 
@@ -45,13 +50,28 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     }
   }
 
+  const obtenerProyecto = async (id: string) => { 
+    setCargando(true);
+    try {
+      const { data } = await ApiService.get<IProyectoSaveValues>(`/proyectos/${id}`);
+      setProyecto(data);
+    } catch (error: any) { 
+      setAlerta({ msg: error.response.data.msg, error: true });
+    } finally {
+      setCargando(false);
+    }
+  }
+
   return (
     <ProyectosContext.Provider
       value={{
         alerta,
         mostrarAlerta,
         proyectos,
-        submitProyecto
+        submitProyecto,
+        obtenerProyecto,
+        proyecto,
+        cargando
       }}
     >
       {children}

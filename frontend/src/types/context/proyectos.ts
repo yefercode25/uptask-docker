@@ -22,3 +22,8 @@ export interface IProyectoSaveValues {
   updatedAt: string;
   __v: number;
 }
+
+export interface IProyectoInfoValues { 
+  proyecto: IProyectoSaveValues;
+  tareas: any[];
+}

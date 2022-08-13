@@ -41,10 +41,7 @@ export const obtenerProyecto = async (req: Request, res: Response) => {
 
     const tareas = await Tarea.find().where({ proyecto: proyecto._id });
 
-    res.status(200).json({
-      proyecto,
-      tareas
-    });
+    res.status(200).json(proyecto);
   } catch (error) {
     console.log(error);
     return res.status(500).json({

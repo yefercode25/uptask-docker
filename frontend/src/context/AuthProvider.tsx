@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import { IAuthValues } from '../types/context/auth';
 import { ApiService } from '../services/ApiService';
-import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface IAuthContextData { 
   auth: IAuthValues;
