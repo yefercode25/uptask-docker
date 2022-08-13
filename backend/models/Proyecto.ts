@@ -6,8 +6,9 @@ export interface IProyectoModel {
   descripcion: string;
   fechaEntrega: Date;
   cliente: string;
-  creador: mongoose.Schema.Types.ObjectId;
-  colaboradores: mongoose.Schema.Types.ObjectId[];
+  creador: mongoose.Types.ObjectId;
+  tareas: mongoose.Types.ObjectId[];
+  colaboradores: mongoose.Types.ObjectId[];
 }
 
 const proyectoSchema = new mongoose.Schema<IProyectoModel>({
@@ -34,6 +35,12 @@ const proyectoSchema = new mongoose.Schema<IProyectoModel>({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Usuario',
   },
+  tareas: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tarea',
+    }
+  ],
   colaboradores: [
     {
       type: mongoose.Schema.Types.ObjectId,

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import { Proyecto, IProyectoModel } from '../models/Proyecto';
 import { Tarea } from '../models/Tarea';
 
@@ -55,6 +56,8 @@ export const agregarTarea = async (req: Request, res: Response) => {
     }
 
     const tarea = await Tarea.create({ nombre, descripcion, prioridad, proyecto });
+
+    existeProyecto.tareas.push(tarea._id);
     
     return res.json(tarea);
   } catch (error) {
