@@ -10,6 +10,7 @@ interface IProyectosContextData {
   submitProyecto: (proyecto: IProyectoValues) => Promise<boolean>;
   obtenerProyecto: (id: string) => Promise<void>;
   cargando: boolean;
+  eliminarProyecto: (id: string) => Promise<boolean>;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -83,6 +84,19 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     }
   }
 
+  const eliminarProyecto = async (id: string): Promise<boolean> => { 
+    try {
+      const { data } = await ApiService.delete(`/proyectos/${id}`);
+      setProyectos(proyectos.filter(proy => proy._id !== id));
+      setAlerta({ msg: data.msg, error: false });
+
+      return true;
+    } catch (error: any) {
+      setAlerta({ msg: error.response.data.msg, error: true });
+      return false;
+    }
+  }
+
   return (
     <ProyectosContext.Provider
       value={{
@@ -92,7 +106,8 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         submitProyecto,
         obtenerProyecto,
         proyecto,
-        cargando
+        cargando,
+        eliminarProyecto
       }}
     >
       {children}
