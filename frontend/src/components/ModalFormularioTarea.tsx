@@ -19,7 +19,7 @@ const ModalFormularioTarea = ({ }: IModalFormularioTarea) => {
   const params = useParams();
   const { modalFormularioTarea, handleModalTarea, mostrarAlerta, alerta, submitTarea } = useProyectos();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => { 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => { 
     e.preventDefault();
     
     if([nombre, descripcion, fechaEntrega, prioridad].includes('')) {
@@ -27,7 +27,18 @@ const ModalFormularioTarea = ({ }: IModalFormularioTarea) => {
       return;
     }
 
-    const isValidSave = submitTarea({ nombre, descripcion, prioridad, fechaEntrega, proyecto: params.id! });
+    const isValidSave = await submitTarea({ nombre, descripcion, prioridad, fechaEntrega, proyecto: params.id! });
+    if (isValidSave) {
+      setNombre('');
+      setDescripcion('');
+      setFechaEntrega('');
+      setPrioridad('');
+      
+      setTimeout(() => {  
+        handleModalTarea();
+        mostrarAlerta({ msg: '', error: false });
+      }, 1000);
+    }
   }
 
   return (

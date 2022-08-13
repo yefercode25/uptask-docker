@@ -112,7 +112,9 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const submitTarea = async (tarea: ITareaValues): Promise<boolean> => { 
     try {
       const { data } = await ApiService.post<ITareaSaveValues>(`/tareas`, { ...tarea });
-      
+      setProyectos(proyectos.map(proy => proy._id === data.proyecto ? { ...proy, tareas: [...proy.tareas, data] } : proy));
+      setProyecto({ ...proyecto, tareas: [...proyecto.tareas, data] });
+      setAlerta({ msg: 'Tarea creada con éxito', error: false });
       return true;
     } catch (error: any) { 
       setAlerta({ msg: error.response.data.msg, error: true });

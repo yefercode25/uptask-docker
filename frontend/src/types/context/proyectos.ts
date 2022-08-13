@@ -18,6 +18,7 @@ export interface IProyectoSaveValues {
   fechaEntrega: string;
   cliente: string;
   colaboradores: any[];
+  tareas: ITareaSaveValues[];
   creador: string;
   createdAt: string;
   updatedAt: string;
