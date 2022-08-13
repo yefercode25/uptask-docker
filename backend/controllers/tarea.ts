@@ -58,6 +58,7 @@ export const agregarTarea = async (req: Request, res: Response) => {
     const tarea = await Tarea.create({ nombre, descripcion, prioridad, proyecto });
 
     existeProyecto.tareas.push(tarea._id);
+    await existeProyecto.save();
     
     return res.json(tarea);
   } catch (error) {
