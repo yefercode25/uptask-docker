@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Proyecto } from '../models/Proyecto';
 import { Tarea } from '../models/Tarea';
+import { Usuario } from '../models/Usuario';
 
 export const obtenerProyectos = async (req: Request, res: Response) => { 
   const { _id } = req.usuario;
@@ -141,6 +142,38 @@ export const eliminarProyecto = async (req: Request, res: Response) => {
     return res.status(500).json({
       ok: false,
       msg: 'Error al eliminar el proyecto',
+      error
+    });
+  }
+}
+
+export const buscarColaborador = async (req: Request, res: Response) => { 
+  const { email } = req.body;
+
+  try { 
+    const usuario = await Usuario.findOne().where({ email, confirmado: true }).select('-confirmado -password -__v -createdAt -updatedAt -token');
+    if (!usuario) {
+      const error = new Error('No se encontró el usuario solicitado');
+      return res.status(404).json({
+        ok: false,
+        msg: error.message,
+      });
+    }
+
+    if (usuario._id.toString() === req.usuario._id.toString()) {
+      const error = new Error('No puedes agregarte a ti mismo como colaborador');
+      return res.status(401).json({
+        ok: false,
+        msg: error.message,
+      });
+    }
+
+    res.status(200).json(usuario);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al buscar el colaborador',
       error
     });
   }
