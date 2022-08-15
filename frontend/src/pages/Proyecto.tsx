@@ -5,11 +5,12 @@ import ModalFormularioTarea from '../components/ModalFormularioTarea';
 import Tarea from '../components/Tarea';
 import { useProyectos } from '../hooks/useProyectos';
 import Colaborador from '../components/Colaborador';
+import ModalEliminarColaborador from '../components/ModalEliminarColaborador';
 
 const Proyecto = () => {
   const { id } = useParams();
   const { obtenerProyecto, proyecto, cargando, handleModalTarea } = useProyectos();
-  console.log(proyecto);
+  
   useEffect(() => {
     obtenerProyecto(id!);
   }, []);
@@ -78,6 +79,7 @@ const Proyecto = () => {
          
           <ModalFormularioTarea />
           <ModalEliminarTarea />
+          <ModalEliminarColaborador />
         </>
       )}
     </div>

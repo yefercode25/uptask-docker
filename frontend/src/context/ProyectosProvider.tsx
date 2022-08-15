@@ -22,6 +22,9 @@ interface IProyectosContextData {
   submitColaborador: (email: string) => void;
   colaborador: IColaboradorValues;
   agregarColaborador: (email: string) => Promise<boolean>;
+  modalEliminarColaborador: boolean;
+  handleModdalElminarColaborador: (colab: any) => void;
+  eliminarColaborador: () => Promise<boolean>;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -35,6 +38,8 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const [tarea, setTarea] = useState<ITareaSaveValues>({} as ITareaSaveValues);
   const [modalEliminarTarea, setModalEliminarTarea] = useState<boolean>(false);
   const [colaborador, setColaborador] = useState<IColaboradorValues>({} as IColaboradorValues);
+  const [modalEliminarColaborador, setModalEliminarColaborador] = useState<boolean>(false);
+  const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState<any>({});
 
   useEffect(() => {
     const obtenerProyectos = async () => { 
@@ -204,6 +209,24 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     }
   }
 
+  const handleModdalElminarColaborador = (colab: any) => { 
+    setModalEliminarColaborador(!modalEliminarColaborador);
+    setColaboradorSeleccionado(colab);
+  }
+
+  const eliminarColaborador = async (): Promise<boolean> => { 
+    try {
+      const { data } = await ApiService.post(`/proyectos/eliminar-colaboradores/${proyecto._id}`, { id: colaboradorSeleccionado._id });
+      setColaboradorSeleccionado({});
+      setAlerta({ msg: data.msg, error: false });
+      setProyecto({ ...proyecto, colaboradores: proyecto.colaboradores.filter(col => col._id !== colaboradorSeleccionado._id) });
+      return true;
+    } catch (error: any) {
+      setAlerta({ msg: error.response.data.msg, error: true });
+      return false;
+    }
+  }
+
   return (
     <ProyectosContext.Provider
       value={{
@@ -225,7 +248,10 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         EliminarTarea,
         submitColaborador,
         colaborador,
-        agregarColaborador
+        agregarColaborador,
+        modalEliminarColaborador,
+        handleModdalElminarColaborador,
+        eliminarColaborador
       }}
     >
       {children}

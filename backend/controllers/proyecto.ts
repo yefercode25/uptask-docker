@@ -243,5 +243,39 @@ export const agregarColaborador = async (req: Request, res: Response) => {
 }
 
 export const eliminarColaborador = async (req: Request, res: Response) => { 
+  const { id } = req.params;
+  const { id: idUsuario } = req.body;
 
+  try {
+    const proyecto = await Proyecto.findById(id);
+    if (!proyecto) {
+      const error = new Error('No se ha encontrado el proyecto solicitado');
+      return res.status(404).json({
+        ok: false,
+        msg: error.message,
+      });
+    }
+
+    if (proyecto.creador.toString() !== req.usuario._id.toString()) {
+      const error = new Error('No tienes permisos para eliminar colaboradores');
+      return res.status(401).json({
+        ok: false,
+        msg: error.message,
+      });
+    }
+
+    proyecto.colaboradores = proyecto.colaboradores.filter(colaborador => colaborador.toString() !== idUsuario);
+    await proyecto.save();
+
+    res.status(200).json({
+      msg: 'El usuario ha sido eliminado como colaborador'
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al eliminar el colaborador',
+      error
+    });
+  }
 }
