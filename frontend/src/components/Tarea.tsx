@@ -7,7 +7,7 @@ interface ITareaProps {
 }
 
 const Tarea = ({ tarea }: ITareaProps) => {
-  const { handleModalEditarTarea } = useProyectos();
+  const { handleModalEditarTarea, handleEliminarTarea } = useProyectos();
   const { nombre, descripcion, prioridad, fechaEntrega, _id, estado } = tarea;
 
   return (
@@ -31,7 +31,7 @@ const Tarea = ({ tarea }: ITareaProps) => {
             Incompleta
           </button>
         )}
-        <button className="bg-red-600 hover:bg-red-700 px-4 py-2 text-white uppercase rounded font-bold text-sm">
+        <button className="bg-red-600 hover:bg-red-700 px-4 py-2 text-white uppercase rounded font-bold text-sm" onClick={() => handleEliminarTarea(tarea)}>
           Eliminar
         </button>
       </div>

@@ -16,6 +16,9 @@ interface IProyectosContextData {
   submitTarea: (tarea: ITareaValues) => Promise<boolean>;
   tarea: ITareaSaveValues;
   handleModalEditarTarea: (tarea: ITareaSaveValues) => void;
+  modalEliminarTarea: boolean;
+  handleEliminarTarea: (tarea: ITareaSaveValues) => void;
+  EliminarTarea: () => Promise<boolean>;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -27,6 +30,7 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const [cargando, setCargando] = useState<boolean>(false);
   const [modalFormularioTarea, setmodalFormularioTarea] = useState<boolean>(false);
   const [tarea, setTarea] = useState<ITareaSaveValues>({} as ITareaSaveValues);
+  const [modalEliminarTarea, setModalEliminarTarea] = useState<boolean>(false);
 
   useEffect(() => {
     const obtenerProyectos = async () => { 
@@ -152,6 +156,23 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     setmodalFormularioTarea(!modalFormularioTarea);
   }
 
+  const handleEliminarTarea = (tar: ITareaSaveValues) => { 
+    setTarea(tar);
+    setModalEliminarTarea(!modalEliminarTarea);
+  }
+
+  const EliminarTarea = async (): Promise<boolean> => {
+    try {
+      await ApiService.delete(`/tareas/${tarea._id}`);
+      setProyectos(proyectos.map(proy => proy._id === tarea.proyecto ? { ...proy, tareas: proy.tareas.filter(ta => ta._id !== tarea._id) } : proy));
+      setProyecto({ ...proyecto, tareas: proyecto.tareas.filter(t => t._id !== tarea._id) });
+      setAlerta({ msg: 'Tarea eliminada con éxito', error: false });
+      return true;
+    } catch (error: any) {
+      setAlerta({ msg: error.response.data.msg, error: true });
+      return false;
+    }
+  }
   return (
     <ProyectosContext.Provider
       value={{
@@ -167,7 +188,10 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         handleModalTarea,
         submitTarea,
         tarea,
-        handleModalEditarTarea
+        handleModalEditarTarea,
+        modalEliminarTarea,
+        handleEliminarTarea,
+        EliminarTarea
       }}
     >
       {children}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import ModalEliminarTarea from '../components/ModalEliminarTarea';
 import ModalFormularioTarea from '../components/ModalFormularioTarea';
 import Tarea from '../components/Tarea';
 import { useProyectos } from '../hooks/useProyectos';
@@ -53,6 +54,7 @@ const Proyecto = () => {
           </div>
          
           <ModalFormularioTarea />
+          <ModalEliminarTarea />
         </>
       )}
     </div>
