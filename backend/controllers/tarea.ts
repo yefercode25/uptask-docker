@@ -35,7 +35,7 @@ export const obtenerTarea = async (req: Request, res: Response) => {
 }
 
 export const agregarTarea = async (req: Request, res: Response) => {
-  const { nombre, descripcion, prioridad, proyecto } = req.body;
+  const { nombre, descripcion, prioridad, proyecto, fechaEntrega } = req.body;
 
   try {
     const existeProyecto = await Proyecto.findById(proyecto);
@@ -55,7 +55,7 @@ export const agregarTarea = async (req: Request, res: Response) => {
       });
     }
 
-    const tarea = await Tarea.create({ nombre, descripcion, prioridad, proyecto });
+    const tarea = await Tarea.create({ nombre, descripcion, prioridad, proyecto, fechaEntrega });
 
     existeProyecto.tareas.push(tarea._id);
     await existeProyecto.save();

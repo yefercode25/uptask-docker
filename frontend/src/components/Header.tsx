@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
-    <header className="px-4 py-5 bg-white border-b">
+    <header className="px-4 py-5 bg-white border-b sticky top-0">
       <div className="md:flex md:justify-between md:items-center">
         <h2 className="text-4xl text-sky-600 font-black text-center">
           Uptask
