@@ -95,6 +95,7 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const obtenerProyecto = async (id: string) => { 
     setCargando(true);
     try {
+      setAlerta({ msg: '', error: false });
       const { data } = await ApiService.get<IProyectoSaveValues>(`/proyectos/${id}`);
       setProyecto(data);
     } catch (error: any) { 

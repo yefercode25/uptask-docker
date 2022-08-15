@@ -13,7 +13,7 @@ export const obtenerProyectos = async (req: Request, res: Response) => {
         { 'creador': { $in: _id } }
       ]
     });
-    console.log(proyectos);
+    
     res.status(200).json(proyectos);
   } catch (error) {
     console.log(error);
@@ -38,7 +38,7 @@ export const obtenerProyecto = async (req: Request, res: Response) => {
       });
     }
 
-    if (proyecto.creador.toString() !== req.usuario._id.toString()) {
+    if (proyecto.creador.toString() !== req.usuario._id.toString() && !proyecto.colaboradores.some(colaborador => colaborador._id.toString() === req.usuario._id.toString())) {
       const error = new Error('No tienes permisos para ver este proyecto');
       return res.status(401).json({
         ok: false,

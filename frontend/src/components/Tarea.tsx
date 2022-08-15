@@ -1,12 +1,14 @@
 import { ITareaSaveValues } from '../types/context/proyectos';
 import { formaterFecha } from '../helpers/formater-fecha';
 import { useProyectos } from '../hooks/useProyectos';
+import { useAdmin } from '../hooks/useAdmin';
 
 interface ITareaProps {
   tarea: ITareaSaveValues
 }
 
 const Tarea = ({ tarea }: ITareaProps) => {
+  const isAdmin = useAdmin();
   const { handleModalEditarTarea, handleEliminarTarea } = useProyectos();
   const { nombre, descripcion, prioridad, fechaEntrega, _id, estado } = tarea;
 
@@ -19,9 +21,12 @@ const Tarea = ({ tarea }: ITareaProps) => {
         <p className="text-sm text-gray-500 uppercase">Prioridad: {prioridad}</p>
       </div>
       <div className="flex gap-4 flex-wrap">
-        <button className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-white uppercase rounded font-bold text-sm" onClick={() => handleModalEditarTarea(tarea)}>
-          Editar
-        </button>
+        {isAdmin && (
+          <button className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-white uppercase rounded font-bold text-sm" onClick={() => handleModalEditarTarea(tarea)}>
+            Editar
+          </button>
+        )}
+
         {estado ? (
           <button className="bg-sky-600 hover:bg-sky-700 px-4 py-2 text-white uppercase rounded font-bold text-sm">
             Completa
@@ -31,9 +36,12 @@ const Tarea = ({ tarea }: ITareaProps) => {
             Incompleta
           </button>
         )}
-        <button className="bg-red-600 hover:bg-red-700 px-4 py-2 text-white uppercase rounded font-bold text-sm" onClick={() => handleEliminarTarea(tarea)}>
-          Eliminar
-        </button>
+        
+        {isAdmin && (
+          <button className="bg-red-600 hover:bg-red-700 px-4 py-2 text-white uppercase rounded font-bold text-sm" onClick={() => handleEliminarTarea(tarea)}>
+            Eliminar
+          </button>
+        )}
       </div>
     </div>
   )
