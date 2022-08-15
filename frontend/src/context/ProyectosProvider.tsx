@@ -27,6 +27,8 @@ interface IProyectosContextData {
   handleModdalElminarColaborador: (colab: any) => void;
   eliminarColaborador: () => Promise<boolean>;
   completarTarea: (id: string) => Promise<boolean>;
+  buscador: boolean;
+  handleBuscador: () => void;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -42,6 +44,7 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const [colaborador, setColaborador] = useState<IColaboradorValues>({} as IColaboradorValues);
   const [modalEliminarColaborador, setModalEliminarColaborador] = useState<boolean>(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState<any>({});
+  const [buscador, setBuscador] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -247,6 +250,10 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     }
   }
 
+  const handleBuscador = () => {
+    setBuscador(!buscador);
+  }
+
   return (
     <ProyectosContext.Provider
       value={{
@@ -272,7 +279,9 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         modalEliminarColaborador,
         handleModdalElminarColaborador,
         eliminarColaborador,
-        completarTarea
+        completarTarea,
+        handleBuscador,
+        buscador
       }}
     >
       {children}
