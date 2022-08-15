@@ -7,7 +7,13 @@ export const obtenerProyectos = async (req: Request, res: Response) => {
   const { _id } = req.usuario;
 
   try {
-    const proyectos = await Proyecto.find().where({ creador: _id });
+    const proyectos = await Proyecto.find({
+      '$or': [
+        { 'colaboradores': { $in: _id } },
+        { 'creador': { $in: _id } }
+      ]
+    });
+    console.log(proyectos);
     res.status(200).json(proyectos);
   } catch (error) {
     console.log(error);
