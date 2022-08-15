@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import { IAlertaValues, IProyectoValues, IProyectoSaveValues, ITareaValues, ITareaSaveValues, IColaboradorValues } from '../types/context/proyectos';
 import { ApiService } from '../services/ApiService';
+import { useNavigate } from 'react-router-dom';
 
 interface IProyectosContextData {
   proyectos: IProyectoSaveValues[];
@@ -41,6 +42,8 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const [colaborador, setColaborador] = useState<IColaboradorValues>({} as IColaboradorValues);
   const [modalEliminarColaborador, setModalEliminarColaborador] = useState<boolean>(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState<any>({});
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerProyectos = async () => { 
@@ -101,6 +104,10 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
       setProyecto(data);
     } catch (error: any) { 
       setAlerta({ msg: error.response.data.msg, error: true });
+      navigate('/proyectos');
+      setTimeout(() => {  
+        setAlerta({ msg: '', error: false });
+      }, 3000);
     } finally {
       setCargando(false);
     }
