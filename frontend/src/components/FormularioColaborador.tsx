@@ -5,7 +5,7 @@ import Alerta from './Alerta';
 const FormularioColaborador = () => {
   const [email, setEmail] = useState<string>('');
   
-  const { mostrarAlerta, alerta } = useProyectos();
+  const { mostrarAlerta, alerta, submitColaborador } = useProyectos();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => { 
     e.preventDefault();
@@ -15,7 +15,7 @@ const FormularioColaborador = () => {
       return;
     }
 
-    console.log(email);
+    submitColaborador(email);
   }
 
   return (

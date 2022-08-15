@@ -19,6 +19,7 @@ interface IProyectosContextData {
   modalEliminarTarea: boolean;
   handleEliminarTarea: (tarea: ITareaSaveValues) => void;
   EliminarTarea: () => Promise<boolean>;
+  submitColaborador: (email: string) => void;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -173,6 +174,11 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
       return false;
     }
   }
+
+  const submitColaborador = async (email: string) => { 
+    console.log(email);
+  }
+
   return (
     <ProyectosContext.Provider
       value={{
@@ -191,7 +197,8 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         handleModalEditarTarea,
         modalEliminarTarea,
         handleEliminarTarea,
-        EliminarTarea
+        EliminarTarea,
+        submitColaborador
       }}
     >
       {children}
