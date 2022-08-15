@@ -1,23 +1,36 @@
-import { Fragment, useState, FormEvent } from 'react';
+import { Fragment, useState, FormEvent, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react'
 import { useProyectos } from '../hooks/useProyectos';
 import Alerta from './Alerta';
 import { useParams } from 'react-router-dom';
 
-interface IModalFormularioTarea {
-  
-}
-
 const PRIORIDADES = ['Baja', 'Media', 'Alta'];
 
-const ModalFormularioTarea = ({ }: IModalFormularioTarea) => {
+const ModalFormularioTarea = () => {
+  const [id, setId] = useState<string>('');
   const [nombre, setNombre] = useState<string>('');
   const [descripcion, setDescripcion] = useState<string>('');
   const [fechaEntrega, setFechaEntrega] = useState<string>('');
   const [prioridad, setPrioridad] = useState<string>('');
 
   const params = useParams();
-  const { modalFormularioTarea, handleModalTarea, mostrarAlerta, alerta, submitTarea } = useProyectos();
+  const { modalFormularioTarea, handleModalTarea, mostrarAlerta, alerta, submitTarea, tarea } = useProyectos();
+
+  useEffect(() => { 
+    if (Object.keys(tarea).length > 0) {
+      setId(tarea._id);
+      setNombre(tarea.nombre);
+      setDescripcion(tarea.descripcion);
+      setFechaEntrega(tarea.fechaEntrega.split('T')[0]);
+      setPrioridad(tarea.prioridad);
+    } else {
+      setId('');
+      setNombre('');
+      setDescripcion('');
+      setFechaEntrega('');
+      setPrioridad('');
+    }
+  }, [tarea]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => { 
     e.preventDefault();
@@ -27,8 +40,9 @@ const ModalFormularioTarea = ({ }: IModalFormularioTarea) => {
       return;
     }
 
-    const isValidSave = await submitTarea({ nombre, descripcion, prioridad, fechaEntrega, proyecto: params.id! });
+    const isValidSave = await submitTarea({ id, nombre, descripcion, prioridad, fechaEntrega, proyecto: params.id! });
     if (isValidSave) {
+      setId('');
       setNombre('');
       setDescripcion('');
       setFechaEntrega('');
@@ -37,7 +51,7 @@ const ModalFormularioTarea = ({ }: IModalFormularioTarea) => {
       setTimeout(() => {  
         handleModalTarea();
         mostrarAlerta({ msg: '', error: false });
-      }, 1000);
+      }, 600);
     }
   }
 
@@ -93,7 +107,7 @@ const ModalFormularioTarea = ({ }: IModalFormularioTarea) => {
               <div className="sm:flex sm:items-start">
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                   <Dialog.Title as="h3" className="text-lg leading-6 font-bold text-gray-900">
-                    Crear Tarea
+                    {id ? 'Editar Tarea' : 'Crear Tarea'}
                   </Dialog.Title>
                   
                   <form className="mt-10" onSubmit={handleSubmit}>
@@ -156,6 +170,7 @@ const ModalFormularioTarea = ({ }: IModalFormularioTarea) => {
                     <input
                       type="submit"
                       className="bg-sky-600 hover:bg-sky-700 w-full text-white uppercase  font-bold cursor-pointer transition-colors rounded p-3 text-sm"
+                      value={id ? 'Editar Tarea' : 'Crear Tarea'}
                     />
                   </form>
                 </div>

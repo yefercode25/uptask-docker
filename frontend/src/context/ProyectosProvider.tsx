@@ -14,6 +14,8 @@ interface IProyectosContextData {
   modalFormularioTarea: boolean;
   handleModalTarea: () => void;
   submitTarea: (tarea: ITareaValues) => Promise<boolean>;
+  tarea: ITareaSaveValues;
+  handleModalEditarTarea: (tarea: ITareaSaveValues) => void;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -24,6 +26,7 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const [alerta, setAlerta] = useState<IAlertaValues>({} as IAlertaValues);
   const [cargando, setCargando] = useState<boolean>(false);
   const [modalFormularioTarea, setmodalFormularioTarea] = useState<boolean>(false);
+  const [tarea, setTarea] = useState<ITareaSaveValues>({} as ITareaSaveValues);
 
   useEffect(() => {
     const obtenerProyectos = async () => { 
@@ -107,19 +110,46 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
 
   const handleModalTarea = () => {
     setmodalFormularioTarea(!modalFormularioTarea);
+    setTarea({} as ITareaSaveValues);
   }
 
-  const submitTarea = async (tarea: ITareaValues): Promise<boolean> => { 
+  const submitTarea = async (tar: ITareaValues): Promise<boolean> => { 
+    if (tar.id) {
+      return editarTarea(tar);
+    } else {
+      return nuevaTarea(tar);
+    }
+  }
+
+  const nuevaTarea = async (tar: ITareaValues): Promise<boolean> => { 
     try {
-      const { data } = await ApiService.post<ITareaSaveValues>(`/tareas`, { ...tarea });
+      const { data } = await ApiService.post<ITareaSaveValues>(`/tareas`, { ...tar });
       setProyectos(proyectos.map(proy => proy._id === data.proyecto ? { ...proy, tareas: [...proy.tareas, data] } : proy));
       setProyecto({ ...proyecto, tareas: [...proyecto.tareas, data] });
       setAlerta({ msg: 'Tarea creada con éxito', error: false });
       return true;
-    } catch (error: any) { 
+    } catch (error: any) {
       setAlerta({ msg: error.response.data.msg, error: true });
       return false;
     }
+  }
+
+  const editarTarea = async (tar: ITareaValues): Promise<boolean> => {
+    try {
+      const { data } = await ApiService.put<ITareaSaveValues>(`/tareas/${tar.id}`, { ...tar });
+      setProyectos(proyectos.map(proy => proy._id === data.proyecto ? { ...proy, tareas: proy.tareas.map(ta => ta._id === data._id ? data : ta) } : proy));
+      setProyecto({ ...proyecto, tareas: proyecto.tareas.map(t => t._id === data._id ? data : t) });
+      setAlerta({ msg: 'Tarea editada con éxito', error: false });
+      return true;
+    } catch (error: any) {
+      setAlerta({ msg: error.response.data.msg, error: true });
+      return false;
+    }
+  }
+
+  const handleModalEditarTarea = (tar: ITareaSaveValues) => { 
+    setTarea(tar);
+    setmodalFormularioTarea(!modalFormularioTarea);
   }
 
   return (
@@ -135,7 +165,9 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         eliminarProyecto,
         modalFormularioTarea,
         handleModalTarea,
-        submitTarea
+        submitTarea,
+        tarea,
+        handleModalEditarTarea
       }}
     >
       {children}
