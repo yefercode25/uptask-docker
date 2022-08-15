@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import { IAlertaValues, IProyectoValues, IProyectoSaveValues, ITareaValues, ITareaSaveValues } from '../types/context/proyectos';
+import { IAlertaValues, IProyectoValues, IProyectoSaveValues, ITareaValues, ITareaSaveValues, IColaboradorValues } from '../types/context/proyectos';
 import { ApiService } from '../services/ApiService';
 
 interface IProyectosContextData {
@@ -20,6 +20,8 @@ interface IProyectosContextData {
   handleEliminarTarea: (tarea: ITareaSaveValues) => void;
   EliminarTarea: () => Promise<boolean>;
   submitColaborador: (email: string) => void;
+  colaborador: IColaboradorValues;
+  agregarColaborador: (email: string) => Promise<boolean>;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -32,6 +34,7 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const [modalFormularioTarea, setmodalFormularioTarea] = useState<boolean>(false);
   const [tarea, setTarea] = useState<ITareaSaveValues>({} as ITareaSaveValues);
   const [modalEliminarTarea, setModalEliminarTarea] = useState<boolean>(false);
+  const [colaborador, setColaborador] = useState<IColaboradorValues>({} as IColaboradorValues);
 
   useEffect(() => {
     const obtenerProyectos = async () => { 
@@ -176,7 +179,29 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   }
 
   const submitColaborador = async (email: string) => { 
-    console.log(email);
+    setCargando(true);
+    try {
+      const { data } = await ApiService.post<IColaboradorValues>(`/proyectos/colaboradores`, { email });
+      setColaborador(data);
+      setAlerta({ msg: '', error: false });
+    } catch (error: any) {
+      setAlerta({ msg: error.response.data.msg, error: true });
+      setColaborador({} as IColaboradorValues);
+    } finally {
+      setCargando(false);
+    }
+  }
+
+  const agregarColaborador = async (email: string): Promise<boolean> => { 
+    try {
+      const { data } = await ApiService.post(`/proyectos/colaboradores/${proyecto._id}`, { email });
+      setColaborador({} as IColaboradorValues);
+      setAlerta({ msg: data.msg, error: false });
+      return true;
+    } catch (error: any) { 
+      setAlerta({ msg: error.response.data.msg, error: true });
+      return false;
+    }
   }
 
   return (
@@ -198,7 +223,9 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         modalEliminarTarea,
         handleEliminarTarea,
         EliminarTarea,
-        submitColaborador
+        submitColaborador,
+        colaborador,
+        agregarColaborador
       }}
     >
       {children}

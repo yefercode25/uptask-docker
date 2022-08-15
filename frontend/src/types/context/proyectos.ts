@@ -51,3 +51,9 @@ export interface ITareaSaveValues {
   updatedAt: string;
   __v: number;
 }
+
+export interface IColaboradorValues { 
+  _id: string;
+  nombre: string;
+  email: string;
+}

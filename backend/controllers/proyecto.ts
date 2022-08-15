@@ -180,7 +180,66 @@ export const buscarColaborador = async (req: Request, res: Response) => {
 }
 
 export const agregarColaborador = async (req: Request, res: Response) => { 
+  const { email } = req.body;
+  const { id } = req.params;
 
+  try {
+    const proyecto = await Proyecto.findById(id);
+    if (!proyecto) {
+      const error = new Error('No se ha encontrado el proyecto solicitado');
+      return res.status(404).json({
+        ok: false,
+        msg: error.message,
+      });
+    }
+
+    if (proyecto.creador.toString() !== req.usuario._id.toString()) {
+      const error = new Error('No tienes permisos para agregar colaboradores');
+      return res.status(401).json({
+        ok: false,
+        msg: error.message,
+      });
+    }
+
+    const usuario = await Usuario.findOne().where({ email });
+    if (!usuario) {
+      const error = new Error('No se ha encontrado el usuario solicitado');
+      return res.status(404).json({
+        ok: false,
+        msg: error.message,
+      });
+    }
+
+    if (usuario._id.toString() === proyecto.creador.toString()) {
+      const error = new Error('No puedes agregarte a ti mismo como colaborador');
+      return res.status(401).json({
+        ok: false,
+        msg: error.message,
+      });
+    }
+
+    if (proyecto.colaboradores.some(colaborador => colaborador.toString() === usuario._id.toString())) {
+      const error = new Error('El usuario ya es colaborador del proyecto');
+      return res.status(409).json({
+        ok: false,
+        msg: error.message,
+      });
+    }
+
+    proyecto.colaboradores.push(usuario._id);
+    await proyecto.save();
+
+    res.status(200).json({
+      msg: 'El usuario ha sido agregado como colaborador'
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al agregar el colaborador',
+      error
+    });
+  }
 }
 
 export const eliminarColaborador = async (req: Request, res: Response) => { 
