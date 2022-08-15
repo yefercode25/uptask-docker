@@ -24,7 +24,7 @@ const EditarProyecto = () => {
     }
   }
 
-  if (cargando) return 'Cargando...';
+  if (cargando) return (<p>'Cargando...'</p>);
 
   return (
     <>
