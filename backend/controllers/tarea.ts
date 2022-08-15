@@ -168,6 +168,7 @@ export const cambiarEstado = async (req: Request, res: Response) => {
     }
 
     tarea.estado = !tarea.estado;
+    tarea.completado = req.usuario._id;
     await tarea.save();
 
     res.json(tarea);

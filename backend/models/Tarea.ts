@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { IProyectoModel } from './Proyecto';
+import { IUsuarioModel } from './Usuario';
 
 export interface ITareaModel {
   nombre: string;
@@ -7,7 +8,8 @@ export interface ITareaModel {
   estado: boolean;
   fechaEntrega: Date;
   prioridad: string;
-  proyecto: mongoose.Schema.Types.ObjectId | IProyectoModel;
+  proyecto: mongoose.Types.ObjectId | IProyectoModel;
+  completado: mongoose.Types.ObjectId | IUsuarioModel;
 }
 
 const tareaSchema = new mongoose.Schema<ITareaModel>({
@@ -39,6 +41,10 @@ const tareaSchema = new mongoose.Schema<ITareaModel>({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Proyecto',
     required: true,
+  },
+  completado: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario',
   }
 }, { timestamps: true });
 
