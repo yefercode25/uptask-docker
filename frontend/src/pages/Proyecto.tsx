@@ -4,11 +4,12 @@ import ModalEliminarTarea from '../components/ModalEliminarTarea';
 import ModalFormularioTarea from '../components/ModalFormularioTarea';
 import Tarea from '../components/Tarea';
 import { useProyectos } from '../hooks/useProyectos';
+import Colaborador from '../components/Colaborador';
 
 const Proyecto = () => {
   const { id } = useParams();
   const { obtenerProyecto, proyecto, cargando, handleModalTarea } = useProyectos();
-
+  console.log(proyecto);
   useEffect(() => {
     obtenerProyecto(id!);
   }, []);
@@ -56,10 +57,23 @@ const Proyecto = () => {
           <div className="flex items-center justify-between mt-10">
             <p className="font-bold text-2xl">
               Colaboradores del proyecto {''}
+              <span className="text-gray-400 text-sm">{ proyecto.colaboradores?.length}</span>
             </p>
             <Link to={`/proyectos/nuevo-colaborador/${id}`} className="text-gray-400 hover:text-black uppercase font-bold">
               Añadir
             </Link>
+          </div>
+
+          <div className="bg-white shadow mt-10 rounded">
+            {proyecto?.colaboradores?.length ? (
+              proyecto.colaboradores?.map(colaborador => (
+                <Colaborador key={colaborador?._id} colaborador={colaborador} />
+              ))
+            ) : (
+              <p className="text-center font-semibold uppercase p-5">
+                No hay colaboradores en este proyecto
+              </p>
+            )}
           </div>
          
           <ModalFormularioTarea />
