@@ -10,7 +10,7 @@ interface ITareaProps {
 const Tarea = ({ tarea }: ITareaProps) => {
   const isAdmin = useAdmin();
   const { handleModalEditarTarea, handleEliminarTarea, completarTarea } = useProyectos();
-  const { nombre, descripcion, prioridad, fechaEntrega, _id, estado } = tarea;
+  const { nombre, descripcion, prioridad, fechaEntrega, _id, estado, completado } = tarea;
 
   return (
     <div className="border-b p-5 flex justify-between items-center gap-4">
@@ -19,6 +19,9 @@ const Tarea = ({ tarea }: ITareaProps) => {
         <p className="text-sm text-gray-500 uppercase">{descripcion}</p>
         <p className="text-sm text-gray-500 uppercase">{formaterFecha(fechaEntrega)}</p>
         <p className="text-sm text-gray-500 uppercase">Prioridad: {prioridad}</p>
+        {estado && (
+          <p className="text-xs text-white uppercase bg-green-600 inline-block py-1 px-2 rounded">Completado por: {completado.nombre}</p>
+        )}
       </div>
       <div className="flex gap-4 flex-wrap">
         {isAdmin && (

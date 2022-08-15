@@ -47,6 +47,7 @@ export interface ITareaSaveValues {
   prioridad: string;
   proyecto: string;
   estado: boolean;
+  completado: { _id: string, nombre: string };
   createdAt: string;
   updatedAt: string;
   __v: number;
