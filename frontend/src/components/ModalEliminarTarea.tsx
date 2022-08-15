@@ -5,13 +5,14 @@ import { ITareaSaveValues } from '../types/context/proyectos';
 import Alerta from './Alerta';
 
 const ModalEliminarTarea = () => {
-  const { handleEliminarTarea, modalEliminarTarea, EliminarTarea, alerta } = useProyectos();
+  const { handleEliminarTarea, modalEliminarTarea, EliminarTarea, alerta, mostrarAlerta } = useProyectos();
 
   const handleEliminar = async (_: any) => { 
     const isValid = await EliminarTarea();
     if(isValid) {
       setTimeout(() => {
         handleEliminarTarea({} as ITareaSaveValues);
+        mostrarAlerta({ msg: '', error: false });
       }, 500);
     }
   }

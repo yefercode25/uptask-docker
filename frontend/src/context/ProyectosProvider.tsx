@@ -25,6 +25,7 @@ interface IProyectosContextData {
   modalEliminarColaborador: boolean;
   handleModdalElminarColaborador: (colab: any) => void;
   eliminarColaborador: () => Promise<boolean>;
+  completarTarea: (id: string) => Promise<boolean>;
 }
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
@@ -228,6 +229,17 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     }
   }
 
+  const completarTarea = async (id: string): Promise<boolean> => { 
+    try {
+      const { data } = await ApiService.post<ITareaSaveValues>(`/tareas/estado/${id}`);
+      setProyecto({ ...proyecto, tareas: proyecto.tareas.map(t => t._id === id ? { ...data  } : t) });
+      return true;
+    } catch (error: any) { 
+      setAlerta({ msg: error.response.data.msg, error: true });
+      return false;
+    }
+  }
+
   return (
     <ProyectosContext.Provider
       value={{
@@ -252,7 +264,8 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         agregarColaborador,
         modalEliminarColaborador,
         handleModdalElminarColaborador,
-        eliminarColaborador
+        eliminarColaborador,
+        completarTarea
       }}
     >
       {children}

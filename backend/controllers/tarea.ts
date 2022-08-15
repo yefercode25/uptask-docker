@@ -130,6 +130,7 @@ export const eliminarTarea = async (req: Request, res: Response) => {
       });
     }
 
+    await Proyecto.findByIdAndUpdate(tarea.proyecto, { $pull: { tareas: tarea._id } });
     await tarea.deleteOne();
 
     res.json({
@@ -146,5 +147,35 @@ export const eliminarTarea = async (req: Request, res: Response) => {
 }
 
 export const cambiarEstado = async (req: Request, res: Response) => {
+  const { id } = req.params;
 
+  try {
+    const tarea = await Tarea.findById(id).populate('proyecto');
+    if(!tarea) {
+      const error = new Error('La tarea a cambiar no existe');
+      return res.status(404).json({
+        ok: false,
+        msg: error.message
+      });
+    }
+
+    if((tarea.proyecto as IProyectoModel)?.creador.toHexString() !== req.usuario._id.toString() && !(tarea.proyecto as IProyectoModel)?.colaboradores.some(colaborador => colaborador.toString() === req.usuario._id.toString())){
+      const error = new Error('No tienes permisos para cambiar el estado de esta tarea');
+      return res.status(401).json({
+        ok: false,
+        msg: error.message
+      });
+    }
+
+    tarea.estado = !tarea.estado;
+    await tarea.save();
+
+    res.json(tarea);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Error al cambiar el estado de la tarea'
+    });
+  }
 }

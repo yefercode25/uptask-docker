@@ -9,7 +9,7 @@ interface ITareaProps {
 
 const Tarea = ({ tarea }: ITareaProps) => {
   const isAdmin = useAdmin();
-  const { handleModalEditarTarea, handleEliminarTarea } = useProyectos();
+  const { handleModalEditarTarea, handleEliminarTarea, completarTarea } = useProyectos();
   const { nombre, descripcion, prioridad, fechaEntrega, _id, estado } = tarea;
 
   return (
@@ -26,16 +26,13 @@ const Tarea = ({ tarea }: ITareaProps) => {
             Editar
           </button>
         )}
-
-        {estado ? (
-          <button className="bg-sky-600 hover:bg-sky-700 px-4 py-2 text-white uppercase rounded font-bold text-sm">
-            Completa
-          </button>
-        ) : (
-          <button className="bg-gray-600 hover:bg-gray-700 px-4 py-2 text-white uppercase rounded font-bold text-sm">
-            Incompleta
-          </button>
-        )}
+    
+        <button
+          className={`${estado ? 'bg-sky-600 hover:bg-sky-700' : 'bg-gray-600 hover:bg-gray-700'} px-4 py-2 text-white uppercase rounded font-bold text-sm`}
+          onClick={() => completarTarea(_id)}
+        >
+          {estado ? 'Completa' : 'Incompleta'}
+        </button>
         
         {isAdmin && (
           <button className="bg-red-600 hover:bg-red-700 px-4 py-2 text-white uppercase rounded font-bold text-sm" onClick={() => handleEliminarTarea(tarea)}>
