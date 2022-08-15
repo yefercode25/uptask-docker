@@ -13,7 +13,7 @@ const PreviewProyecto = ({ proyecto }: IPreviewProyectoProps) => {
   const isAdmin = auth._id === proyecto.creador;
 
   return (
-    <div className="border-b p-5 flex items-center">
+    <div className="border-b p-5 flex md:items-center flex-col md:flex-row">
       <p className="flex-1 text-base">
         {nombre} {''}
         <span className="text-sm text-gray-500 uppercase font-semibold">{cliente} {''}</span>

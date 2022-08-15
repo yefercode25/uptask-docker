@@ -19,7 +19,7 @@ const FormularioColaborador = () => {
   }
 
   return (
-    <form className="bg-white p-5 md:w-3/4 rounded shadow" onSubmit={handleSubmit}>
+    <form className="bg-white p-5 w-full md:w-3/4 rounded shadow" onSubmit={handleSubmit}>
       {alerta?.msg && (
         <div className="mb-10">
           <Alerta {...alerta} />

@@ -36,7 +36,7 @@ const NuevoColaborador = () => {
         <p>Cargando...</p>
       ) : colaborador?._id && (
         <div className="flex justify-center mt-10">
-          <div className="bg-white p-5 md:w-3/4 rounded shadow">
+            <div className="bg-white p-5 w-full md:w-3/4 rounded shadow">
             <h2 className="text-center mb-5 text-2xl font-bold">Resultado:</h2>
             <div className="flex justify-between items-center">
               <p>{colaborador.nombre}</p>

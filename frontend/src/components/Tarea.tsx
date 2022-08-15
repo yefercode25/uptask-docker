@@ -23,7 +23,7 @@ const Tarea = ({ tarea }: ITareaProps) => {
           <p className="text-xs text-white uppercase bg-green-600 inline-block py-1 px-2 rounded">Completado por: {completado.nombre}</p>
         )}
       </div>
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
         {isAdmin && (
           <button className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-white uppercase rounded font-bold text-sm" onClick={() => handleModalEditarTarea(tarea)}>
             Editar
