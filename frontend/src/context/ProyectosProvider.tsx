@@ -3,6 +3,7 @@ import { IAlertaValues, IProyectoValues, IProyectoSaveValues, ITareaValues, ITar
 import { ApiService } from '../services/ApiService';
 import { useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
+import { useAuth } from '../hooks/useAuth';
 
 interface IProyectosContextData {
   proyectos: IProyectoSaveValues[];
@@ -55,6 +56,7 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const [buscador, setBuscador] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const { auth } = useAuth();
 
   useEffect(() => {
     const obtenerProyectos = async () => { 
@@ -67,7 +69,7 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     }
 
     obtenerProyectos();
-  }, []);
+  }, [auth]);
 
   useEffect(() => { 
     socket = io(import.meta.env.VITE_API_SERVICE_URL);
