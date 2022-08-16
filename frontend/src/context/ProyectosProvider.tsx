@@ -34,6 +34,7 @@ interface IProyectosContextData {
   ioEliminarTarea: (tarea: ITareaSaveValues) => void;
   ioEditarTarea: (tarea: ITareaSaveValues) => void;
   ioCompletarTarea: (tarea: ITareaSaveValues) => void;
+  cerrarSesionProyectos: () => void;
 }
 
 let socket: Socket;
@@ -293,6 +294,19 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     console.log({ ...proyecto, tareas: proyecto.tareas.map(t => t._id === tar._id ? { ...tar } : t) })
   }
 
+  const cerrarSesionProyectos = async () => { 
+    setProyectos([]);
+    setProyecto({} as IProyectoSaveValues);
+    setAlerta({} as IAlertaValues);
+    setmodalFormularioTarea(false);
+    setTarea({} as ITareaSaveValues);
+    setModalEliminarTarea(false);
+    setColaborador({} as IColaboradorValues);
+    setModalEliminarColaborador(false);
+    setColaboradorSeleccionado({});
+    setBuscador(false);
+  }
+
   return (
     <ProyectosContext.Provider
       value={{
@@ -324,7 +338,8 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         ioSubmitTarea,
         ioEliminarTarea,
         ioEditarTarea,
-        ioCompletarTarea
+        ioCompletarTarea,
+        cerrarSesionProyectos
       }}
     >
       {children}

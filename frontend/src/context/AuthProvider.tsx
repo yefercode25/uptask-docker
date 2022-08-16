@@ -7,6 +7,7 @@ interface IAuthContextData {
   auth: IAuthValues;
   setAuth: (auth: IAuthValues) => void;
   cargando: boolean;
+  cerrarSesionAuth: () => void;
 }
 
 export const AuthContext = createContext<IAuthContextData>({} as IAuthContextData);
@@ -47,8 +48,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     autenticarUsuario();
   }, []);
 
+  const cerrarSesionAuth = () => {
+    setAuth({} as IAuthValues);
+    setCargando(false);
+    localStorage.clear();
+  }
+
   return (
-    <AuthContext.Provider value={{ auth, setAuth, cargando }}>
+    <AuthContext.Provider value={{ auth, setAuth, cargando, cerrarSesionAuth }}>
       {children}
     </AuthContext.Provider>
   );
