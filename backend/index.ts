@@ -6,6 +6,7 @@ import { conectDB } from './config/db';
 import usuarioRoutes from './routes/usuario';
 import proyectoRoutes from './routes/proyecto';
 import tareasRoutes from './routes/tarea';
+import { Server } from 'socket.io';
 
 dotenv.config();
 
@@ -30,6 +31,17 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/proyectos', proyectoRoutes);
 app.use('/api/tareas', tareasRoutes);
 
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
   console.log(`🚀 Server is running on port ${process.env.PORT} 🚀`);
+});
+
+const io = new Server(server, {
+  pingTimeout: 60000,
+  cors: {
+    origin: process.env.FRONTEND_URL
+  }
+});
+
+io.on('connection', (socket) => { 
+  console.log('New client connected', socket.id);
 });
