@@ -1,0 +1,40 @@
+version: '3.1'
+services:
+  mongo:
+    container_name: mongo-db-service
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+  
+  uptask-backend:
+    container_name: uptask-backend
+    build: ./backend
+    restart: always
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+    environment:
+      - PORT=3000
+      - MONGO_URL=mongodb://mongo:27017/uptask
+      - JWT_SECRET=jhlveflp7281ga07gdim
+      - FRONTEND_URL=http://127.0.0.1:7676
+      - MAIL_HOST=smtp.mailtrap.io
+      - MAIL_PORT=2525
+      - MAIL_USER=4386468fb36b0c
+      - MAIL_PASS=48df4ce8620315
+    
+  uptask-frontend:
+    container_name: uptask-frontend
+    build: ./frontend
+    restart: always
+    expose:
+      - "7676"
+    ports:
+      - "7676:7676"
+
