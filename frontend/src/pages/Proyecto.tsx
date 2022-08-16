@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import io, { Socket } from 'socket.io-client';
 import { Link, useParams } from 'react-router-dom';
 import ModalEliminarTarea from '../components/ModalEliminarTarea';
 import ModalFormularioTarea from '../components/ModalFormularioTarea';
@@ -6,19 +7,54 @@ import Tarea from '../components/Tarea';
 import { useProyectos } from '../hooks/useProyectos';
 import Colaborador from '../components/Colaborador';
 import ModalEliminarColaborador from '../components/ModalEliminarColaborador';
-import Alerta from '../components/Alerta';
 import { useAdmin } from '../hooks/useAdmin';
+import { ITareaSaveValues } from '../types/context/proyectos';
+
+let socket: Socket;
 
 const Proyecto = () => {
   const { id } = useParams();
   const isAdmin = useAdmin();
-  const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta } = useProyectos();
-  
+  const { obtenerProyecto, proyecto, cargando, handleModalTarea, ioSubmitTarea, ioEliminarTarea, ioEditarTarea, ioCompletarTarea } = useProyectos();
+  const { nombre, _id } = proyecto;
   useEffect(() => {
-    obtenerProyecto(id!);
+    (async () => {
+      await obtenerProyecto(id!);
+
+      !socket && (socket = io(import.meta.env.VITE_API_SERVICE_URL));
+    })();
   }, []);
 
-  const { nombre, _id } = proyecto;
+  useEffect(() => {
+    if (socket) {
+      socket.emit('abrir-proyecto', id);
+
+      socket.on('tarea-agregada', (tarea: ITareaSaveValues) => {
+        if (tarea.proyecto === proyecto._id) {
+          ioSubmitTarea(tarea);
+        }
+      });
+
+      socket.on('tarea-eliminada', (tarea: ITareaSaveValues) => {
+        if (tarea.proyecto === proyecto._id) {
+          ioEliminarTarea(tarea);
+        }
+      });
+
+      socket.on('tarea-editada', (tarea: any) => {
+        if (tarea.proyecto._id === proyecto._id) {
+          ioEditarTarea(tarea);
+        }
+      });
+
+      socket.on('tarea-completada', (tarea: any) => {
+        if (tarea.proyecto._id === proyecto._id) {
+          console.log('paso por aqui');
+          ioCompletarTarea(tarea);
+        }
+      });
+    }
+  } , []);
 
   if(cargando) return <p>Cargando...</p>;
 

@@ -43,5 +43,30 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => { 
-  console.log('New client connected', socket.id);
+  console.log('Nuevo usuario conectado: ', socket.id);
+
+  socket.on('abrir-proyecto', (id) => {
+    socket.join(id);
+  });
+
+  socket.on('nueva-tarea', (tarea) => {
+    const proyecto = tarea.proyecto;
+    socket.to(proyecto).emit('tarea-agregada', tarea);
+  });
+
+  socket.on('eliminar-tarea', (tarea) => { 
+    const proyecto = tarea.proyecto;
+    socket.to(proyecto).emit('tarea-eliminada', tarea);
+  });
+
+  socket.on('editar-tarea', (tarea) => { 
+    const proyecto = tarea.proyecto;
+    socket.to(proyecto._id).emit('tarea-editada', tarea);
+  });
+
+  socket.on('completar-tarea', (tarea) => { 
+    console.log(tarea);
+    const proyecto = tarea.proyecto;
+    socket.to(proyecto._id).emit('tarea-completada', tarea);
+  });
 });

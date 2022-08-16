@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import { IAlertaValues, IProyectoValues, IProyectoSaveValues, ITareaValues, ITareaSaveValues, IColaboradorValues } from '../types/context/proyectos';
 import { ApiService } from '../services/ApiService';
 import { useNavigate } from 'react-router-dom';
+import { io, Socket } from 'socket.io-client';
 
 interface IProyectosContextData {
   proyectos: IProyectoSaveValues[];
@@ -29,7 +30,13 @@ interface IProyectosContextData {
   completarTarea: (id: string) => Promise<boolean>;
   buscador: boolean;
   handleBuscador: () => void;
+  ioSubmitTarea: (tarea: ITareaSaveValues) => void;
+  ioEliminarTarea: (tarea: ITareaSaveValues) => void;
+  ioEditarTarea: (tarea: ITareaSaveValues) => void;
+  ioCompletarTarea: (tarea: ITareaSaveValues) => void;
 }
+
+let socket: Socket;
 
 export const ProyectosContext = createContext<IProyectosContextData>({} as IProyectosContextData);
 
@@ -59,6 +66,10 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
     }
 
     obtenerProyectos();
+  }, []);
+
+  useEffect(() => { 
+    socket = io(import.meta.env.VITE_API_SERVICE_URL);
   }, []);
 
   const mostrarAlerta = (datos: IAlertaValues) => {
@@ -152,6 +163,8 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
       setProyectos(proyectos.map(proy => proy._id === data.proyecto ? { ...proy, tareas: [...proy.tareas, data] } : proy));
       setProyecto({ ...proyecto, tareas: [...proyecto.tareas, data] });
       setAlerta({ msg: 'Tarea creada con éxito', error: false });
+
+      socket.emit('nueva-tarea', { ...data });
       return true;
     } catch (error: any) {
       setAlerta({ msg: error.response.data.msg, error: true });
@@ -165,6 +178,9 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
       setProyectos(proyectos.map(proy => proy._id === data.proyecto ? { ...proy, tareas: proy.tareas.map(ta => ta._id === data._id ? data : ta) } : proy));
       setProyecto({ ...proyecto, tareas: proyecto.tareas.map(t => t._id === data._id ? data : t) });
       setAlerta({ msg: 'Tarea editada con éxito', error: false });
+
+      socket.emit('editar-tarea', { ...data });
+
       return true;
     } catch (error: any) {
       setAlerta({ msg: error.response.data.msg, error: true });
@@ -188,6 +204,9 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
       setProyectos(proyectos.map(proy => proy._id === tarea.proyecto ? { ...proy, tareas: proy.tareas.filter(ta => ta._id !== tarea._id) } : proy));
       setProyecto({ ...proyecto, tareas: proyecto.tareas.filter(t => t._id !== tarea._id) });
       setAlerta({ msg: 'Tarea eliminada con éxito', error: false });
+      
+      socket.emit('eliminar-tarea', { ...tarea });
+      
       return true;
     } catch (error: any) {
       setAlerta({ msg: error.response.data.msg, error: true });
@@ -242,7 +261,10 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
   const completarTarea = async (id: string): Promise<boolean> => { 
     try {
       const { data } = await ApiService.post<ITareaSaveValues>(`/tareas/estado/${id}`);
-      setProyecto({ ...proyecto, tareas: proyecto.tareas.map(t => t._id === id ? { ...data  } : t) });
+      setProyecto({ ...proyecto, tareas: proyecto.tareas.map(t => t._id === id ? { ...data } : t) });
+      
+      socket.emit('completar-tarea', { ...data });
+
       return true;
     } catch (error: any) { 
       setAlerta({ msg: error.response.data.msg, error: true });
@@ -252,6 +274,23 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
 
   const handleBuscador = () => {
     setBuscador(!buscador);
+  }
+
+  const ioSubmitTarea = (tar: ITareaSaveValues) => {
+    setProyecto({ ...proyecto, tareas: [...proyecto.tareas, tar]});
+  }
+
+  const ioEliminarTarea = (tar: ITareaSaveValues) => { 
+    setProyecto({ ...proyecto, tareas: proyecto.tareas.filter(tar => tar._id !== tar._id)});
+  }
+
+  const ioEditarTarea = (tar: ITareaSaveValues) => { 
+    setProyecto({ ...proyecto, tareas: proyecto.tareas.map(t => t._id === tar._id ? tar : t)});
+  }
+
+  const ioCompletarTarea = (tar: ITareaSaveValues) => {
+    setProyecto({ ...proyecto, tareas: proyecto.tareas.map(t => t._id === tar._id ? { ...tar } : t) });
+    console.log({ ...proyecto, tareas: proyecto.tareas.map(t => t._id === tar._id ? { ...tar } : t) })
   }
 
   return (
@@ -281,7 +320,11 @@ export const ProyectosProvider = ({ children }: { children: React.ReactNode }) =
         eliminarColaborador,
         completarTarea,
         handleBuscador,
-        buscador
+        buscador,
+        ioSubmitTarea,
+        ioEliminarTarea,
+        ioEditarTarea,
+        ioCompletarTarea
       }}
     >
       {children}
